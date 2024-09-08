@@ -8,8 +8,8 @@ namespace WinFormsApp1
 {
     public class Person
     {
-        String name;
-        int age;
+        public String name;
+        public int age;
 
         public Person(int age, String name) {
             this.age = age;

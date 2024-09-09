@@ -8,21 +8,38 @@ namespace NoteApp
 {
     public class Note : ICloneable
     {
-        String name = "Без названия";
+        private const String DEFAULT_NAME_NOTE = "Без названия";
+        String name;
         TypeNoteEnum noteType;
         String textOfNote;
         readonly DateTime dateTimeCreate;
         DateTime dateTimeUpdate;
 
         public Note(String name, TypeNoteEnum noteType,
-            String textOfNote, DateTime dateTimeUpdate)
+            String textOfNote)
         {
-            this.name = name;
+            this.name =nameCheck(name);
             this.noteType = noteType;
             this.textOfNote = textOfNote;
             this.dateTimeCreate = DateTime.Now;
             this.dateTimeUpdate = dateTimeCreate;
         }
+
+
+        private String nameCheck(String name) {
+            if (String.IsNullOrEmpty(name))
+            { 
+                return DEFAULT_NAME_NOTE;
+            }
+                
+            if (name.Length > 50)
+                {
+                    return name.Substring(0, 50);
+                }
+            return name;
+            }
+            
+        
 
 
 
@@ -80,8 +97,7 @@ namespace NoteApp
             return new Note(
                 this.name,
                 this.noteType,
-                this.textOfNote,
-                this.dateTimeUpdate
+                this.textOfNote
             );
         }
     }

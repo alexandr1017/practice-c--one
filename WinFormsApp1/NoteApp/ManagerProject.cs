@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,29 +14,56 @@ namespace NoteApp
         string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "json.txt");
         
 
-        public Project loadProjectFromJsonFile(String filePath)
+        public Project loadProjectFromJsonFile()
         {
-            if (!File.Exists(filePath))
+            
+            try
             {
-                throw new FileNotFoundException($"File at path {filePath} was not found.");
+                using (StreamReader sr = new StreamReader(filePath))
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+
+                    List<Note> notesList = serializer.Deserialize<List<Note>>(reader);
+
+                    return new Project(notesList);
+                }
+            } catch (FileNotFoundException ex) {
+                Console.WriteLine($"Файл не найден! Будет создан новый файл для заметок! {ex.Message}");
+                return new Project(new List<Note>());
             }
 
-            using (StreamReader sr = new StreamReader(filePath))
-            using (JsonReader reader = new JsonTextReader(sr))
+           
+        }
+        public void saveProjectToJsonFile(Project project)
+        {
+            if (File.Exists(filePath))
             {
-                JsonSerializer serializer = new JsonSerializer();
-              
-                List<Note> notesList = serializer.Deserialize<List<Note>>(reader);
+                File.Delete(filePath);
+            }
 
-                return new Project(notesList);
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.Indented,
+                //DateFormatString = "dd:MM:yy HH:mm",
+                Converters = new List<JsonConverter> { new StringEnumConverter() }
+            };
+
+            string json = JsonConvert.SerializeObject(project.getNotesList(), settings);
+
+            using (StreamWriter sw = new StreamWriter(filePath))
+            {
+                sw.Write(json);
             }
         }
-        public void saveProjectToJsonFile(String filePath, Project project)
+
+        public String getFilePath() {
+            return filePath;
+        }
+        public void setFilePath(String filePath)
         {
-            JsonSerializer serializer = new JsonSerializer();
-            using (StreamWriter sw = new StreamWriter(filePath))
-            using (JsonWriter writer = new JsonTextWriter(sw))
-            { serializer.Serialize(writer, project.getNotesList); }
+            this.filePath = filePath;
         }
 
 

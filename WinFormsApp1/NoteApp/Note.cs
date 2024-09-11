@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace NoteApp
@@ -9,20 +11,23 @@ namespace NoteApp
     public class Note : ICloneable
     {
         private const String DEFAULT_NAME_NOTE = "Без названия";
-        String name;
-        TypeNoteEnum noteType;
-        String textOfNote;
-        readonly DateTime dateTimeCreate;
-        DateTime dateTimeUpdate;
+        public String name;
+        public TypeNoteEnum noteType;
+        public String textOfNote;
+        public readonly DateTime dateTimeCreate = DateTime.Now;
+        public DateTime dateTimeUpdate = DateTime.Now;
 
+
+
+        [JsonConstructor]
         public Note(String name, TypeNoteEnum noteType,
-            String textOfNote)
+            String textOfNote, DateTime dateTimeCreate, DateTime dateTimeUpdate)
         {
             this.name =nameCheck(name);
             this.noteType = noteType;
             this.textOfNote = textOfNote;
-            this.dateTimeCreate = DateTime.Now;
-            this.dateTimeUpdate = dateTimeCreate;
+            this.dateTimeCreate = dateTimeCreate;
+            this.dateTimeUpdate = dateTimeUpdate;
         }
 
 
@@ -97,7 +102,9 @@ namespace NoteApp
             return new Note(
                 this.name,
                 this.noteType,
-                this.textOfNote
+                this.textOfNote,
+                this.dateTimeCreate,
+                this.dateTimeUpdate
             );
         }
     }

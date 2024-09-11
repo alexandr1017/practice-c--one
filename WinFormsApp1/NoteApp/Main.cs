@@ -12,22 +12,33 @@ namespace NoteApp
         {
             ManagerProject managerProject = new ManagerProject();
 
-       
-            Project project = new Project(new List<Note>());
+            Project project = managerProject.loadProjectFromJsonFile();
 
-         
-            Note noteOne = new Note("Заметка1", TypeNoteEnum.Home, "Купить молока");
-            Note noteTwo = new Note("Заметка2", TypeNoteEnum.Work, "Выполнить задачу 1");
+   
 
-         
-            project.addNote(noteOne);
-            project.addNote(noteTwo);
 
-            
+            //Note noteOne = new Note("Заметка1", TypeNoteEnum.Home, "Купить молока");
+            //Note noteTwo = new Note("Заметка2", TypeNoteEnum.Work, "Выполнить задачу 1");
+
+
+            //project.addNote(noteOne);
+            //project.addNote(noteTwo);
+
+
+            Note noteThree = new Note("Заметка3", TypeNoteEnum.HealthAndSport, "Купить витамины",DateTime.Now,DateTime.Now);
+            project.addNote(noteThree);
+
+            managerProject.saveProjectToJsonFile(project);
+
             foreach (Note note in project.getNotesList())
             {
-                Console.WriteLine($"Название: {note.getName()}, Тип: {note.getTypeOfNote()}, Текст: {note.getTextOfNote()}");
+                Console.WriteLine($"Название: {note.getName()}, " +
+                    $"Тип: {note.getTypeOfNote()}, " +
+                    $"Текст: {note.getTextOfNote()}, " +
+                    $"Дата и время создания: {note.getDateTimeCreate()}, " +
+                    $"Дата и время изменения: {note.getDateTimeUpdate()}");
             }
+
         }
     }
 }

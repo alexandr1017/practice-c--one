@@ -13,14 +13,6 @@
             this.notesList = notesList;
         }
 
-        public Project()
-        {
-            if (notesList == null)
-            {
-                notesList = new List<Note>();
-            }
-            this.notesList = notesList;
-        }
 
         public void addNote(Note note)
         {

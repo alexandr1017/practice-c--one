@@ -1,3 +1,5 @@
+using NoteApp;
+
 namespace WinFormsApp1
 {
     public partial class MainForm : Form

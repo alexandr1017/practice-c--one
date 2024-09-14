@@ -1,6 +1,6 @@
 ﻿namespace NoteApp
 {
-    class Project
+    public class Project
     {
         private List<Note> notesList;
 

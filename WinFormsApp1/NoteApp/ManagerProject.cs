@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace NoteApp
 {
-    internal class ManagerProject
+    public class ManagerProject
     {
 
-        string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "json.txt");
+        static string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "json.txt");
         
 
-        public Project loadProjectFromJsonFile()
+        public static Project loadProjectFromJsonFile()
         {
             
             try
@@ -35,7 +35,7 @@ namespace NoteApp
 
            
         }
-        public void saveProjectToJsonFile(Project project)
+        public static void saveProjectToJsonFile(Project project)
         {
             if (File.Exists(filePath))
             {
@@ -57,15 +57,6 @@ namespace NoteApp
                 sw.Write(json);
             }
         }
-
-        public String getFilePath() {
-            return filePath;
-        }
-        public void setFilePath(String filePath)
-        {
-            this.filePath = filePath;
-        }
-
 
     }
 }

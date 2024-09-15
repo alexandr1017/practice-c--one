@@ -15,29 +15,31 @@ namespace NoteApp
         private Button addNoteButton;
         private Button editNoteButton;
         private Button removeNoteButton;
+        private MenuStrip menuStrip;
 
         public MainForm(Project project)
         {   
             this.project = project;
             InitializeComponent();
+            InitializeMenu(); // Добавляем меню
             this.FormClosing += MainForm_FormClosing;
         }
 
         private void InitializeComponent()
         {
-            this.Text = "Главное окно программы";
+            this.Text = "NoteApp";
             this.Size = new Size(800, 600);
 
             // ListBox для списка заметок
             notesListBox = new ListBox();
-            notesListBox.Location = new Point(10, 10);
-            notesListBox.Size = new Size(300, 500);
+            notesListBox.Location = new Point(10, 35);
+            notesListBox.Size = new Size(300, 484);
             notesListBox.SelectedIndexChanged += NotesListBox_SelectedIndexChanged;
 
             // Метка для отображения выбранной заметки
             noteDetailsLabel = new Label();
-            noteDetailsLabel.Location = new Point(320, 10);
-            noteDetailsLabel.Size = new Size(450, 500);
+            noteDetailsLabel.Location = new Point(320, 35);
+            noteDetailsLabel.Size = new Size(450, 480);
             noteDetailsLabel.AutoSize = false;
             noteDetailsLabel.BorderStyle = BorderStyle.FixedSingle;
 
@@ -136,9 +138,77 @@ namespace NoteApp
                 }
             }
         }
-        //сохранение проекта с заметками в файл  при выходе из программы
+
+
+        private void InitializeMenu()
+        {
+            // Создаем MenuStrip
+            menuStrip = new MenuStrip();
+
+            // Создаем меню File
+            ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
+            ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("Exit", null, ExitMenuItem_Click);
+            exitMenuItem.ShortcutKeys = Keys.Alt | Keys.F4; // Устанавливаем горячие клавиши Alt+F4
+            fileMenu.DropDownItems.Add(exitMenuItem);
+
+            // Создаем меню Edit
+            ToolStripMenuItem editMenu = new ToolStripMenuItem("Edit");
+            ToolStripMenuItem addNoteMenuItem = new ToolStripMenuItem("Add Note", null, AddNoteMenuItem_Click);
+            ToolStripMenuItem editNoteMenuItem = new ToolStripMenuItem("Edit Note", null, EditNoteMenuItem_Click);
+            ToolStripMenuItem removeNoteMenuItem = new ToolStripMenuItem("Remove Note", null, RemoveNoteMenuItem_Click);
+            editMenu.DropDownItems.AddRange(new ToolStripItem[] { addNoteMenuItem, editNoteMenuItem, removeNoteMenuItem });
+
+            // Создаем меню Help
+            ToolStripMenuItem helpMenu = new ToolStripMenuItem("Help");
+            ToolStripMenuItem aboutMenuItem = new ToolStripMenuItem("About", null, AboutMenuItem_Click);
+            aboutMenuItem.ShortcutKeys = Keys.F1; // Горячая клавиша F1 для вызова окна "О программе"
+            helpMenu.DropDownItems.Add(aboutMenuItem);
+
+            // Добавляем все меню в MenuStrip
+            menuStrip.Items.Add(fileMenu);
+            menuStrip.Items.Add(editMenu);
+            menuStrip.Items.Add(helpMenu);
+
+            // Устанавливаем MenuStrip в форму
+            this.MainMenuStrip = menuStrip;
+            this.Controls.Add(menuStrip);
+        }
+
+        // Обработчик выхода из приложения
+        private void ExitMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close(); // Закрыть приложение
+        }
+
+        // Обработчик создания новой заметки
+        private void AddNoteMenuItem_Click(object sender, EventArgs e)
+        {
+            AddNoteButton_Click(sender, e); // Вызов метода для создания новой заметки
+        }
+
+        // Обработчик редактирования заметки
+        private void EditNoteMenuItem_Click(object sender, EventArgs e)
+        {
+            EditNoteButton_Click(sender, e); // Вызов метода для редактирования заметки
+        }
+
+        // Обработчик удаления заметки
+        private void RemoveNoteMenuItem_Click(object sender, EventArgs e)
+        {
+            RemoveNoteButton_Click(sender, e); // Вызов метода для удаления заметки
+        }
+
+        // Обработчик вызова окна "О программе"
+        private void AboutMenuItem_Click(object sender, EventArgs e)
+        {
+            AboutForm aboutForm = new AboutForm();
+            aboutForm.ShowDialog(); // Открыть окно "О программе"
+        }
+
+        // Обработчик закрытия формы (сохранение данных)
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            // Сохранение данных проекта перед выходом
             ManagerProject.saveProjectToJsonFile(project);
             MessageBox.Show("Проект сохранен успешно.");
         }
@@ -148,5 +218,6 @@ namespace NoteApp
             this.project = project;
             LoadNotes();
         }
+
     }
 }

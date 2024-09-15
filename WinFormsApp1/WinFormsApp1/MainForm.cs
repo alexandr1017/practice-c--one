@@ -16,57 +16,77 @@ namespace NoteApp
         private Button editNoteButton;
         private Button removeNoteButton;
         private MenuStrip menuStrip;
+        private SplitContainer splitContainer;
+        private TableLayoutPanel tableLayoutPanel;
 
         public MainForm(Project project)
-        {   
+        {
             this.project = project;
             InitializeComponent();
-            InitializeMenu(); // Добавляем меню
+            InitializeMenu();
             this.FormClosing += MainForm_FormClosing;
         }
 
         private void InitializeComponent()
         {
             this.Text = "NoteApp";
+            this.MinimumSize = new Size(600, 400); // Устанавливаем минимальный размер окна
             this.Size = new Size(800, 600);
+            this.StartPosition = FormStartPosition.CenterScreen;
+
+            // Создаем SplitContainer для разделения окна на две части (список заметок и детальная информация)
+            splitContainer = new SplitContainer();
+            splitContainer.Dock = DockStyle.Fill; // Растягиваем SplitContainer на все окно
+            splitContainer.Orientation = Orientation.Vertical; // Вертикальное разделение
+            splitContainer.SplitterDistance = 50; // Размер панели для списка заметок
+
+            // Создаем TableLayoutPanel для размещения кнопок в нижней части окна
+            tableLayoutPanel = new TableLayoutPanel();
+            tableLayoutPanel.Dock = DockStyle.Bottom; // Закрепляем панель кнопок внизу
+            tableLayoutPanel.ColumnCount = 3;
+            tableLayoutPanel.RowCount = 1;
+            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F)); // Равномерное распределение кнопок
+            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tableLayoutPanel.Height = 50; // Высота панели кнопок
 
             // ListBox для списка заметок
             notesListBox = new ListBox();
-            notesListBox.Location = new Point(10, 35);
-            notesListBox.Size = new Size(300, 484);
+            notesListBox.Dock = DockStyle.Fill; // Растягиваем ListBox по всей панели
             notesListBox.SelectedIndexChanged += NotesListBox_SelectedIndexChanged;
+            splitContainer.Panel1.Controls.Add(notesListBox); // Добавляем ListBox в левую панель SplitContainer
 
             // Метка для отображения выбранной заметки
             noteDetailsLabel = new Label();
-            noteDetailsLabel.Location = new Point(320, 35);
-            noteDetailsLabel.Size = new Size(450, 480);
-            noteDetailsLabel.AutoSize = false;
+            noteDetailsLabel.Dock = DockStyle.Fill; // Растягиваем метку по всей правой панели
             noteDetailsLabel.BorderStyle = BorderStyle.FixedSingle;
+            noteDetailsLabel.Padding = new Padding(10); // Добавляем отступы
+            splitContainer.Panel2.Controls.Add(noteDetailsLabel); // Добавляем метку в правую панель SplitContainer
 
             // Кнопка "Добавить заметку"
             addNoteButton = new Button();
             addNoteButton.Text = "Add Note";
-            addNoteButton.Location = new Point(10, 520);
+            addNoteButton.Dock = DockStyle.Fill; // Растягиваем кнопку по ячейке
             addNoteButton.Click += AddNoteButton_Click;
+            tableLayoutPanel.Controls.Add(addNoteButton, 0, 0); // Добавляем кнопку в первую колонку
 
             // Кнопка "Редактировать заметку"
             editNoteButton = new Button();
             editNoteButton.Text = "Edit Note";
-            editNoteButton.Location = new Point(100, 520);
+            editNoteButton.Dock = DockStyle.Fill;
             editNoteButton.Click += EditNoteButton_Click;
+            tableLayoutPanel.Controls.Add(editNoteButton, 1, 0); // Добавляем кнопку во вторую колонку
 
             // Кнопка "Удалить заметку"
             removeNoteButton = new Button();
             removeNoteButton.Text = "Remove Note";
-            removeNoteButton.Location = new Point(200, 520);
+            removeNoteButton.Dock = DockStyle.Fill;
             removeNoteButton.Click += RemoveNoteButton_Click;
+            tableLayoutPanel.Controls.Add(removeNoteButton, 2, 0); // Добавляем кнопку в третью колонку
 
-            // Добавляем компоненты в форму
-            this.Controls.Add(notesListBox);
-            this.Controls.Add(noteDetailsLabel);
-            this.Controls.Add(addNoteButton);
-            this.Controls.Add(editNoteButton);
-            this.Controls.Add(removeNoteButton);
+            // Добавляем SplitContainer и TableLayoutPanel в форму
+            this.Controls.Add(splitContainer);
+            this.Controls.Add(tableLayoutPanel);
 
             LoadNotes();
         }
@@ -78,6 +98,12 @@ namespace NoteApp
             foreach (var note in this.project.getNotesList())
             {
                 notesListBox.Items.Add(note.getName());
+            }
+
+            // Устанавливаем первую заметку как выбранную, если есть хотя бы одна заметка
+            if (notesListBox.Items.Count > 0)
+            {
+                notesListBox.SelectedIndex = 0;
             }
         }
 
@@ -142,34 +168,28 @@ namespace NoteApp
 
         private void InitializeMenu()
         {
-            // Создаем MenuStrip
             menuStrip = new MenuStrip();
 
-            // Создаем меню File
             ToolStripMenuItem fileMenu = new ToolStripMenuItem("File");
             ToolStripMenuItem exitMenuItem = new ToolStripMenuItem("Exit", null, ExitMenuItem_Click);
-            exitMenuItem.ShortcutKeys = Keys.Alt | Keys.F4; // Устанавливаем горячие клавиши Alt+F4
+            exitMenuItem.ShortcutKeys = Keys.Alt | Keys.F4;
             fileMenu.DropDownItems.Add(exitMenuItem);
 
-            // Создаем меню Edit
             ToolStripMenuItem editMenu = new ToolStripMenuItem("Edit");
             ToolStripMenuItem addNoteMenuItem = new ToolStripMenuItem("Add Note", null, AddNoteMenuItem_Click);
             ToolStripMenuItem editNoteMenuItem = new ToolStripMenuItem("Edit Note", null, EditNoteMenuItem_Click);
             ToolStripMenuItem removeNoteMenuItem = new ToolStripMenuItem("Remove Note", null, RemoveNoteMenuItem_Click);
             editMenu.DropDownItems.AddRange(new ToolStripItem[] { addNoteMenuItem, editNoteMenuItem, removeNoteMenuItem });
 
-            // Создаем меню Help
             ToolStripMenuItem helpMenu = new ToolStripMenuItem("Help");
             ToolStripMenuItem aboutMenuItem = new ToolStripMenuItem("About", null, AboutMenuItem_Click);
-            aboutMenuItem.ShortcutKeys = Keys.F1; // Горячая клавиша F1 для вызова окна "О программе"
+            aboutMenuItem.ShortcutKeys = Keys.F1;
             helpMenu.DropDownItems.Add(aboutMenuItem);
 
-            // Добавляем все меню в MenuStrip
             menuStrip.Items.Add(fileMenu);
             menuStrip.Items.Add(editMenu);
             menuStrip.Items.Add(helpMenu);
 
-            // Устанавливаем MenuStrip в форму
             this.MainMenuStrip = menuStrip;
             this.Controls.Add(menuStrip);
         }
@@ -218,6 +238,5 @@ namespace NoteApp
             this.project = project;
             LoadNotes();
         }
-
     }
 }

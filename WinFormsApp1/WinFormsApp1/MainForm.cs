@@ -11,6 +11,9 @@ namespace NoteApp
     {
         private Project project;
         private ListBox notesListBox;
+        private Label noteTitleLabel; // Новый Label для названия заметки
+        private Label noteTypeLabel; // Новый Label для типа заметки
+        private ComboBox noteTypeComboBox;
         private Label noteDetailsLabel;
         private Button addNoteButton;
         private Button editNoteButton;
@@ -18,6 +21,8 @@ namespace NoteApp
         private MenuStrip menuStrip;
         private SplitContainer splitContainer;
         private TableLayoutPanel tableLayoutPanel;
+
+        private List<Note> filteredNotes;
 
         public MainForm(Project project)
         {
@@ -29,97 +34,219 @@ namespace NoteApp
 
         private void InitializeComponent()
         {
-            this.Text = "NoteApp";
-            this.MinimumSize = new Size(600, 400); // Устанавливаем минимальный размер окна
-            this.Size = new Size(800, 600);
-            this.StartPosition = FormStartPosition.CenterScreen;
-
-            // Создаем SplitContainer для разделения окна на две части (список заметок и детальная информация)
             splitContainer = new SplitContainer();
-            splitContainer.Dock = DockStyle.Fill; // Растягиваем SplitContainer на все окно
-            splitContainer.Orientation = Orientation.Vertical; // Вертикальное разделение
-            splitContainer.SplitterDistance = 50; // Размер панели для списка заметок
-
-            // Создаем TableLayoutPanel для размещения кнопок в нижней части окна
-            tableLayoutPanel = new TableLayoutPanel();
-            tableLayoutPanel.Dock = DockStyle.Bottom; // Закрепляем панель кнопок внизу
-            tableLayoutPanel.ColumnCount = 3;
-            tableLayoutPanel.RowCount = 1;
-            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F)); // Равномерное распределение кнопок
-            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
-            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
-            tableLayoutPanel.Height = 50; // Высота панели кнопок
-
-            // ListBox для списка заметок
             notesListBox = new ListBox();
-            notesListBox.Dock = DockStyle.Fill; // Растягиваем ListBox по всей панели
-            notesListBox.SelectedIndexChanged += NotesListBox_SelectedIndexChanged;
-            splitContainer.Panel1.Controls.Add(notesListBox); // Добавляем ListBox в левую панель SplitContainer
-
-            // Метка для отображения выбранной заметки
+            noteTypeComboBox = new ComboBox();
             noteDetailsLabel = new Label();
-            noteDetailsLabel.Dock = DockStyle.Fill; // Растягиваем метку по всей правой панели
-            noteDetailsLabel.BorderStyle = BorderStyle.FixedSingle;
-            noteDetailsLabel.Padding = new Padding(10); // Добавляем отступы
-            splitContainer.Panel2.Controls.Add(noteDetailsLabel); // Добавляем метку в правую панель SplitContainer
-
-            // Кнопка "Добавить заметку"
+            noteTypeLabel = new Label();
+            noteTitleLabel = new Label();
+            tableLayoutPanel = new TableLayoutPanel();
             addNoteButton = new Button();
-            addNoteButton.Text = "Add Note";
-            addNoteButton.Dock = DockStyle.Fill; // Растягиваем кнопку по ячейке
-            addNoteButton.Click += AddNoteButton_Click;
-            tableLayoutPanel.Controls.Add(addNoteButton, 0, 0); // Добавляем кнопку в первую колонку
-
-            // Кнопка "Редактировать заметку"
             editNoteButton = new Button();
-            editNoteButton.Text = "Edit Note";
-            editNoteButton.Dock = DockStyle.Fill;
-            editNoteButton.Click += EditNoteButton_Click;
-            tableLayoutPanel.Controls.Add(editNoteButton, 1, 0); // Добавляем кнопку во вторую колонку
-
-            // Кнопка "Удалить заметку"
             removeNoteButton = new Button();
-            removeNoteButton.Text = "Remove Note";
+            ((System.ComponentModel.ISupportInitialize)splitContainer).BeginInit();
+            splitContainer.Panel1.SuspendLayout();
+            splitContainer.Panel2.SuspendLayout();
+            splitContainer.SuspendLayout();
+            tableLayoutPanel.SuspendLayout();
+            SuspendLayout();
+            // 
+            // splitContainer
+            // 
+            splitContainer.Dock = DockStyle.Fill;
+            splitContainer.Location = new Point(0, 0);
+            splitContainer.Name = "splitContainer";
+            // 
+            // splitContainer.Panel1
+            // 
+            splitContainer.Panel1.Controls.Add(notesListBox);
+            splitContainer.Panel1.Controls.Add(noteTypeComboBox);
+            // 
+            // splitContainer.Panel2
+            // 
+            splitContainer.Panel2.Controls.Add(noteDetailsLabel);
+            splitContainer.Panel2.Controls.Add(noteTypeLabel);
+            splitContainer.Panel2.Controls.Add(noteTitleLabel);
+            splitContainer.Size = new Size(784, 511);
+            splitContainer.SplitterDistance = 261;
+            splitContainer.TabIndex = 0;
+            // 
+            // notesListBox
+            // 
+            notesListBox.Dock = DockStyle.Fill;
+            notesListBox.ItemHeight = 15;
+            notesListBox.Location = new Point(0, 23);
+            notesListBox.Name = "notesListBox";
+            notesListBox.Size = new Size(261, 488);
+            notesListBox.TabIndex = 0;
+            notesListBox.SelectedIndexChanged += NotesListBox_SelectedIndexChanged;
+            // 
+            // noteTypeComboBox
+            // 
+            noteTypeComboBox.Dock = DockStyle.Top;
+            noteTypeComboBox.Items.AddRange(new object[] { "All", "Work", "Home", "HealthAndSport", "Peaople", "Documents", "Finance", "Other" });
+            noteTypeComboBox.Location = new Point(0, 0);
+            noteTypeComboBox.Name = "noteTypeComboBox";
+            noteTypeComboBox.Size = new Size(261, 23);
+            noteTypeComboBox.TabIndex = 1;
+            noteTypeComboBox.SelectedIndexChanged += NoteTypeComboBox_SelectedIndexChanged;
+            // 
+            // noteDetailsLabel
+            // 
+            noteDetailsLabel.BorderStyle = BorderStyle.FixedSingle;
+            noteDetailsLabel.Dock = DockStyle.Fill;
+            noteDetailsLabel.Location = new Point(0, 91);
+            noteDetailsLabel.Name = "noteDetailsLabel";
+            noteDetailsLabel.Padding = new Padding(10);
+            noteDetailsLabel.Size = new Size(519, 420);
+            noteDetailsLabel.TabIndex = 0;
+            // 
+            // noteTypeLabel
+            // 
+            noteTypeLabel.AutoSize = true;
+            noteTypeLabel.Dock = DockStyle.Top;
+            noteTypeLabel.Font = new Font("Segoe UI", 12F, FontStyle.Italic);
+            noteTypeLabel.Location = new Point(0, 50);
+            noteTypeLabel.Name = "noteTypeLabel";
+            noteTypeLabel.Padding = new Padding(10);
+            noteTypeLabel.Size = new Size(20, 41);
+            noteTypeLabel.TabIndex = 1;
+            // 
+            // noteTitleLabel
+            // 
+            noteTitleLabel.AutoSize = true;
+            noteTitleLabel.Dock = DockStyle.Top;
+            noteTitleLabel.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
+            noteTitleLabel.Location = new Point(0, 0);
+            noteTitleLabel.Name = "noteTitleLabel";
+            noteTitleLabel.Padding = new Padding(10);
+            noteTitleLabel.Size = new Size(20, 50);
+            noteTitleLabel.TabIndex = 2;
+            // 
+            // tableLayoutPanel
+            // 
+            tableLayoutPanel.ColumnCount = 3;
+            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
+            tableLayoutPanel.Controls.Add(addNoteButton, 0, 0);
+            tableLayoutPanel.Controls.Add(editNoteButton, 1, 0);
+            tableLayoutPanel.Controls.Add(removeNoteButton, 2, 0);
+            tableLayoutPanel.Dock = DockStyle.Bottom;
+            tableLayoutPanel.Location = new Point(0, 511);
+            tableLayoutPanel.Name = "tableLayoutPanel";
+            tableLayoutPanel.RowCount = 1;
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel.Size = new Size(784, 50);
+            tableLayoutPanel.TabIndex = 1;
+            // 
+            // addNoteButton
+            // 
+            addNoteButton.Dock = DockStyle.Fill;
+            addNoteButton.Location = new Point(3, 3);
+            addNoteButton.Name = "addNoteButton";
+            addNoteButton.Size = new Size(255, 44);
+            addNoteButton.TabIndex = 0;
+            addNoteButton.Text = "Add Note";
+            addNoteButton.Click += AddNoteButton_Click;
+            // 
+            // editNoteButton
+            // 
+            editNoteButton.Dock = DockStyle.Fill;
+            editNoteButton.Location = new Point(264, 3);
+            editNoteButton.Name = "editNoteButton";
+            editNoteButton.Size = new Size(255, 44);
+            editNoteButton.TabIndex = 1;
+            editNoteButton.Text = "Edit Note";
+            editNoteButton.Click += EditNoteButton_Click;
+            // 
+            // removeNoteButton
+            // 
             removeNoteButton.Dock = DockStyle.Fill;
+            removeNoteButton.Location = new Point(525, 3);
+            removeNoteButton.Name = "removeNoteButton";
+            removeNoteButton.Size = new Size(256, 44);
+            removeNoteButton.TabIndex = 2;
+            removeNoteButton.Text = "Remove Note";
             removeNoteButton.Click += RemoveNoteButton_Click;
-            tableLayoutPanel.Controls.Add(removeNoteButton, 2, 0); // Добавляем кнопку в третью колонку
-
-            // Добавляем SplitContainer и TableLayoutPanel в форму
-            this.Controls.Add(splitContainer);
-            this.Controls.Add(tableLayoutPanel);
-
-            LoadNotes();
+            // 
+            // MainForm
+            // 
+            ClientSize = new Size(784, 561);
+            Controls.Add(splitContainer);
+            Controls.Add(tableLayoutPanel);
+            MinimumSize = new Size(600, 400);
+            Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "NoteApp";
+            splitContainer.Panel1.ResumeLayout(false);
+            splitContainer.Panel2.ResumeLayout(false);
+            splitContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer).EndInit();
+            splitContainer.ResumeLayout(false);
+            tableLayoutPanel.ResumeLayout(false);
+            ResumeLayout(false);
         }
 
-        // Загрузка заметок из проекта в ListBox
+        // Загрузка заметок из проекта в ListBox с фильтрацией по типу
         private void LoadNotes()
         {
             notesListBox.Items.Clear();
+            filteredNotes = new List<Note>(); // Создаем новый список для фильтрованных заметок
+            string selectedType = noteTypeComboBox.SelectedItem.ToString();
+
             foreach (var note in this.project.getNotesList())
             {
-                notesListBox.Items.Add(note.getName());
+                // Если выбран "All" или тип заметки совпадает с выбранным типом в ComboBox
+                if (selectedType == "All" || Enum.GetName(note.getTypeOfNote()) == selectedType)
+                {
+                    notesListBox.Items.Add(note.getName());
+                    filteredNotes.Add(note); // Добавляем заметку в фильтрованный список
+                }
             }
 
-            // Устанавливаем первую заметку как выбранную, если есть хотя бы одна заметка
+            // Если есть заметки в списке, выбираем первую
             if (notesListBox.Items.Count > 0)
             {
                 notesListBox.SelectedIndex = 0;
             }
+            else
+            {
+                ClearNoteDetails(); // Очищаем правую панель, если заметок нет
+            }
+        }
+
+        // Обработка изменения выбранного типа заметки
+        private void NoteTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadNotes(); // Перезагружаем список заметок при изменении фильтра
         }
 
         // Обработка выбора заметки
         private void NotesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = notesListBox.SelectedIndex;
-            if (index >= 0)
+
+            if (index >= 0 && filteredNotes != null && index < filteredNotes.Count)
             {
-                Note selectedNote = project.getNotesList()[index];
-                noteDetailsLabel.Text = $"Название: {selectedNote.getName()}\n" +
-                                        $"Тип: {selectedNote.getTypeOfNote()}\n" +
-                                        $"Текст: {selectedNote.getTextOfNote()}\n" +
+                Note selectedNote = filteredNotes[index]; // Используем индекс для фильтрованного списка
+                noteTitleLabel.Text = selectedNote.getName(); // Устанавливаем название заметки
+                noteTypeLabel.Text = Enum.GetName(typeof(TypeNoteEnum), selectedNote.getTypeOfNote()); // Устанавливаем тип заметки
+                noteDetailsLabel.Text = $"Текст: {selectedNote.getTextOfNote()}\n" +
                                         $"Дата создания: {selectedNote.getDateTimeCreate()}\n" +
                                         $"Дата изменения: {selectedNote.getDateTimeUpdate()}";
             }
+            else
+            {
+                ClearNoteDetails(); // Если индекс не найден, очищаем правую панель
+            }
+        }
+
+        private void ClearNoteDetails()
+        {
+            noteTitleLabel.Text = string.Empty;
+            noteTypeLabel.Text = string.Empty;
+            noteDetailsLabel.Text = string.Empty;
         }
 
         // Добавление новой заметки

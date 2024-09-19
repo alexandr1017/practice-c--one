@@ -132,10 +132,9 @@ namespace NoteAppUI
         private void OkButton_Click(object sender, EventArgs e)
         {
             // Проверка на корректность данных
-            if (string.IsNullOrEmpty(nameTextBox.Text) || nameTextBox.Text.Length > 50)
+            if (nameTextBox.Text.Length > 50)
             {
-                MessageBox.Show("Название должно быть непустым и не более 50 символов");
-                return;
+                MessageBox.Show("Название должно быть не более 50 символов");
             }
 
             // Обновляем или создаем заметку

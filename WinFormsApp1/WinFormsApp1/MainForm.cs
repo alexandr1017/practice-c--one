@@ -11,8 +11,10 @@ namespace NoteApp
     {
         private Project project;
         private ListBox notesListBox;
-        private Label noteTitleLabel; // Новый Label для названия заметки
-        private Label noteTypeLabel; // Новый Label для типа заметки
+        private Label noteTitleLabel;
+        private Label noteTypeLabel;
+        private Label noteTypeCategoryLabel;
+        private FlowLayoutPanel noteTypePanel;
         private ComboBox noteTypeComboBox;
         private Label noteDetailsLabel;
         private Button addNoteButton;
@@ -38,11 +40,13 @@ namespace NoteApp
             MinimumSize = new Size(600, 400);
             Size = new Size(800, 600);
             StartPosition = FormStartPosition.CenterScreen;
+
             // Создаем SplitContainer для разделения окна на две части (список заметок и детальная информация)
             splitContainer = new SplitContainer();
             splitContainer.Dock = DockStyle.Fill;
             splitContainer.Orientation = Orientation.Vertical;
             splitContainer.SplitterDistance = 50;
+
             // Создаем TableLayoutPanel для размещения кнопок в нижней части окна
             tableLayoutPanel = new TableLayoutPanel();
             tableLayoutPanel.Dock = DockStyle.Bottom;
@@ -52,18 +56,22 @@ namespace NoteApp
             tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
             tableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.33F));
             tableLayoutPanel.Height = 50;
+
+            // ComboBox для выбора типа заметок
             noteTypeComboBox = new ComboBox();
             noteTypeComboBox.Dock = DockStyle.Top;
             noteTypeComboBox.Items.Add("All");
             noteTypeComboBox.Items.AddRange(Enum.GetNames(typeof(TypeNoteEnum)));
             noteTypeComboBox.SelectedIndex = 0;
             noteTypeComboBox.SelectedIndexChanged += NoteTypeComboBox_SelectedIndexChanged;
+
             // ListBox для списка заметок
             notesListBox = new ListBox();
             notesListBox.Dock = DockStyle.Fill;
             notesListBox.SelectedIndexChanged += NotesListBox_SelectedIndexChanged;
             splitContainer.Panel1.Controls.Add(notesListBox);
             splitContainer.Panel1.Controls.Add(noteTypeComboBox);
+
             // Label для отображения названия заметки
             noteTitleLabel = new Label();
             noteTitleLabel.Dock = DockStyle.Top;
@@ -71,43 +79,71 @@ namespace NoteApp
             noteTitleLabel.Font = new Font(noteTitleLabel.Font.FontFamily, 16, FontStyle.Bold);
             noteTitleLabel.Padding = new Padding(10);
             noteTitleLabel.Height = 50;
+
+            // Панель для размещения "Категория заметки:" и типа заметки в одной строке
+            noteTypePanel = new FlowLayoutPanel();
+            noteTypePanel.Dock = DockStyle.Top;
+            noteTypePanel.Height = 30;
+            noteTypePanel.Padding = new Padding(10);
+            noteTypePanel.AutoSize = true;
+            noteTypePanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            noteTypePanel.FlowDirection = FlowDirection.LeftToRight;  // Устанавливаем горизонтальное размещение
+
+
+            // Label для категории типа заметки
+            noteTypeCategoryLabel = new Label();
+            noteTypeCategoryLabel.Text = "Категория заметки:";
+            noteTypeCategoryLabel.AutoSize = true;
+            noteTypeCategoryLabel.Font = new Font(noteTypeCategoryLabel.Font.FontFamily, 12, FontStyle.Regular);
+            noteTypeCategoryLabel.TextAlign = ContentAlignment.MiddleLeft;
+
             // Label для типа заметки
             noteTypeLabel = new Label();
-            noteTypeLabel.Dock = DockStyle.Top;
             noteTypeLabel.AutoSize = true;
             noteTypeLabel.Font = new Font(noteTypeLabel.Font.FontFamily, 12, FontStyle.Italic);
-            noteTypeLabel.Padding = new Padding(10);
-            noteTypeLabel.Height = 30;
+            noteTypeLabel.TextAlign = ContentAlignment.MiddleLeft;
+            noteTypeLabel.Margin = new Padding(5, 0, 0, 0); // Добавляем отступ слева для лучшего отображения
+
+            // Добавляем подпись и тип заметки на одну панель
+            noteTypePanel.Controls.Add(noteTypeCategoryLabel);
+            noteTypePanel.Controls.Add(noteTypeLabel);
+
             // Метка для отображения детальной информации о заметке
             noteDetailsLabel = new Label();
             noteDetailsLabel.Dock = DockStyle.Fill;
             noteDetailsLabel.BorderStyle = BorderStyle.FixedSingle;
             noteDetailsLabel.Padding = new Padding(10);
-            // Добавляем все метки в правую панель SplitContainer
+
+            // Добавляем все метки и панель в правую панель SplitContainer
             splitContainer.Panel2.Controls.Add(noteDetailsLabel);
-            splitContainer.Panel2.Controls.Add(noteTypeLabel);
+            splitContainer.Panel2.Controls.Add(noteTypePanel); // Добавляем панель с категорией и типом заметки
             splitContainer.Panel2.Controls.Add(noteTitleLabel);
+
             // Кнопка "Добавить заметку"
             addNoteButton = new Button();
             addNoteButton.Text = "Add Note";
             addNoteButton.Dock = DockStyle.Fill;
             addNoteButton.Click += AddNoteButton_Click;
             tableLayoutPanel.Controls.Add(addNoteButton, 0, 0);
+
             // Кнопка "Редактировать заметку"
             editNoteButton = new Button();
             editNoteButton.Text = "Edit Note";
             editNoteButton.Dock = DockStyle.Fill;
             editNoteButton.Click += EditNoteButton_Click;
             tableLayoutPanel.Controls.Add(editNoteButton, 1, 0);
+
             // Кнопка "Удалить заметку"
             removeNoteButton = new Button();
             removeNoteButton.Text = "Remove Note";
             removeNoteButton.Dock = DockStyle.Fill;
             removeNoteButton.Click += RemoveNoteButton_Click;
             tableLayoutPanel.Controls.Add(removeNoteButton, 2, 0);
+
             // Добавляем SplitContainer и TableLayoutPanel в форму
             Controls.Add(splitContainer);
             Controls.Add(tableLayoutPanel);
+
             LoadNotes();
         }
 
@@ -115,27 +151,25 @@ namespace NoteApp
         private void LoadNotes()
         {
             notesListBox.Items.Clear();
-            filteredNotes = new List<Note>(); // Создаем новый список для фильтрованных заметок
+            filteredNotes = new List<Note>();
             string selectedType = noteTypeComboBox.SelectedItem.ToString();
 
             foreach (var note in this.project.getNotesList())
             {
-                // Если выбран "All" или тип заметки совпадает с выбранным типом в ComboBox
                 if (selectedType == "All" || Enum.GetName(note.getTypeOfNote()) == selectedType)
                 {
                     notesListBox.Items.Add(note.getName());
-                    filteredNotes.Add(note); // Добавляем заметку в фильтрованный список
+                    filteredNotes.Add(note);
                 }
             }
 
-            // Если есть заметки в списке, выбираем первую
             if (notesListBox.Items.Count > 0)
             {
                 notesListBox.SelectedIndex = 0;
             }
             else
             {
-                ClearNoteDetails(); // Очищаем правую панель, если заметок нет
+                ClearNoteDetails();
             }
         }
 
@@ -152,16 +186,22 @@ namespace NoteApp
 
             if (index >= 0 && filteredNotes != null && index < filteredNotes.Count)
             {
-                Note selectedNote = filteredNotes[index]; // Используем индекс для фильтрованного списка
-                noteTitleLabel.Text = selectedNote.getName(); // Устанавливаем название заметки
-                noteTypeLabel.Text = Enum.GetName(typeof(TypeNoteEnum), selectedNote.getTypeOfNote()); // Устанавливаем тип заметки
+                Note selectedNote = filteredNotes[index];
+
+                // Устанавливаем название заметки
+                noteTitleLabel.Text = selectedNote.getName();
+
+                // Устанавливаем тип заметки
+                noteTypeLabel.Text = Enum.GetName(typeof(TypeNoteEnum), selectedNote.getTypeOfNote());
+
+                // Устанавливаем детальную информацию о заметке
                 noteDetailsLabel.Text = $"Текст: {selectedNote.getTextOfNote()}\n" +
                                         $"Дата создания: {selectedNote.getDateTimeCreate()}\n" +
                                         $"Дата изменения: {selectedNote.getDateTimeUpdate()}";
             }
             else
             {
-                ClearNoteDetails(); // Если индекс не найден, очищаем правую панель
+                ClearNoteDetails();
             }
         }
 
@@ -186,15 +226,16 @@ namespace NoteApp
         // Редактирование выбранной заметки
         private void EditNoteButton_Click(object sender, EventArgs e)
         {
-            int index = notesListBox.SelectedIndex;
-            if (index >= 0)
+            int index = notesListBox.SelectedIndex;  // Получаем индекс выбранной заметки в ListBox
+            if (index >= 0 && filteredNotes != null && index < filteredNotes.Count)
             {
-                Note selectedNote = project.getNotesList()[index];
+                Note selectedNote = filteredNotes[index];  // Берем заметку из фильтрованного списка, а не из исходного
                 EditNoteForm editForm = new EditNoteForm(selectedNote);
                 if (editForm.ShowDialog() == DialogResult.OK)
                 {
+                    // Обновляем заметку в оригинальном списке проекта
                     project.updateNote(editForm.Note);
-                    LoadNotes();
+                    LoadNotes();  // Перезагружаем список заметок
                 }
             }
         }

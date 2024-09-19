@@ -55,7 +55,7 @@ namespace NoteApp
 
         public void setName(String name)
         {
-            this.name = name;
+            this.name = nameCheck(name);
             this.dateTimeUpdate = DateTime.Now;
         }
 

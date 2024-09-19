@@ -10,7 +10,7 @@ namespace NoteApp
     {
         public static void Main(string[] args)
         {
-            
+
 
             //Project project = ManagerProject.loadProjectFromJsonFile();
 

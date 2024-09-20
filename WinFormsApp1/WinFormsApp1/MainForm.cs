@@ -7,28 +7,41 @@ using System.Threading.Tasks;
 
 namespace NoteApp
 {
+    /// <summary>
+    /// Класс MainForm — это главное окно приложения
+    /// для работы с заметками.Оно отображает список
+    /// заметок, детальную информацию о выбранной заметке,
+    /// а также предоставляет функционал для добавления,
+    /// редактирования и удаления заметок.
+    /// </summary>
     public partial class MainForm : Form
     {
-        private Project project;
-        private ListBox notesListBox;
-        private Label noteTitleLabel;
-        private Label noteTypeLabel;
-        private Label noteTypeCategoryLabel;
-        private FlowLayoutPanel noteTypePanel;
-        private ComboBox noteTypeComboBox;
-        private Panel noteDetailsPanel;  // Панель с прокруткой
-        private Label noteUpdateDateLabel; // Добавляем две новые метки для даты создания и даты изменения
-        private Label noteCreationDateLabel;
-        private Label noteDetailsLabel;
-        private Button addNoteButton;
-        private Button editNoteButton;
-        private Button removeNoteButton;
-        private MenuStrip menuStrip;
-        private SplitContainer splitContainer;
-        private TableLayoutPanel tableLayoutPanel;
+        private Project project; // Экземпляр класса Project, который хранит список заметок.
+        private ListBox notesListBox; // Элемент интерфейса ListBox, отображающий список заметок.
+        private Label noteTitleLabel; // Метка, отображающая название выбранной заметки.
+        private Label noteTypeLabel; // Метка, отображающая тип выбранной заметки.
+        private Label noteTypeCategoryLabel; // Метка, указывающая категорию типа заметки.
+        private FlowLayoutPanel noteTypePanel; // Панель, которая содержит метки типа заметки и категорию.
+        private ComboBox noteTypeComboBox; // Выпадающий список для фильтрации заметок по типу.
+        private Panel noteDetailsPanel;  // Панель с прокруткой, отображающая текст выбранной заметки.
+        private Label noteUpdateDateLabel; // Метка, отображающая дату последнего изменения заметки.
+        private Label noteCreationDateLabel; // Метка, отображающая дату создания заметки.
+        private Label noteDetailsLabel; // Метка, отображающая текст заметки.
+        private Button addNoteButton; // Кнопка для добавления новой заметки.
+        private Button editNoteButton; // Кнопка для редактирования выбранной заметки.
+        private Button removeNoteButton; // Кнопка для удаления выбранной заметки.
+        private MenuStrip menuStrip; // Главное меню приложения.
+        private SplitContainer splitContainer; // Контейнер для разделения окна на две части: список заметок и детальную информацию о заметке.
+        private TableLayoutPanel tableLayoutPanel; // Панель для размещения кнопок в нижней части окна.
 
-        private List<Note> filteredNotes;
+        private List<Note> filteredNotes; // Список заметок, отфильтрованных по выбранному типу
 
+        /// <summary>
+        /// инициализирует форму с проектом, переданным в качестве аргумента.
+        /// Вызывает методы InitializeComponent() и InitializeMenu() для создания интерфейса и меню.
+        /// Добавляет обработчик события закрытия формы FormClosing.
+        /// </summary>
+        /// <param name="project">Проект, который содержит заметки для отображения.</param>
         public MainForm(Project project)
         {
             this.project = project;
@@ -37,6 +50,15 @@ namespace NoteApp
             this.FormClosing += MainForm_FormClosing;
         }
 
+        /// <summary>
+        /// Этот метод инициализирует компоненты формы пользовательского интерфейса:
+        /// Создает SplitContainer для разделения окна на две части(список заметок и детальная информация).
+        /// Создает TableLayoutPanel для размещения кнопок(добавить, редактировать, удалить заметки).
+        /// Инициализирует и настраивает элементы интерфейса: notesListBox, noteTitleLabel, noteTypeComboBox, noteDetailsPanel, noteTypePanel,
+        /// метки для дат создания и изменения заметок.
+        /// Устанавливает обработчики событий для работы с элементами интерфейса, таких как нажатие на кнопки, выбор заметок и изменение фильтра.
+        /// Загружает заметки через метод LoadNotes().
+        /// </summary>
         private void InitializeComponent()
         {
             Text = "NoteApp";
@@ -77,7 +99,7 @@ namespace NoteApp
             splitContainer.Panel1.Controls.Add(notesListBox);
             splitContainer.Panel1.Controls.Add(noteTypeComboBox);
 
-            // Label для отображения названия заметки
+            // Label Метки для отображения заголовка и типа заметки
             noteTitleLabel = new Label();
             noteTitleLabel.Dock = DockStyle.Top;
             noteTitleLabel.AutoSize = true;
@@ -85,7 +107,7 @@ namespace NoteApp
             noteTitleLabel.Padding = new Padding(10);
             noteTitleLabel.Height = 50;
 
-            // Панель для размещения "Категория заметки:" и типа заметки в одной строке
+            // Панель для размещения категории заметки и типа заметки в одной строке
             noteTypePanel = new FlowLayoutPanel();
             noteTypePanel.Dock = DockStyle.Top;
             noteTypePanel.Height = 30;
@@ -177,7 +199,12 @@ namespace NoteApp
             LoadNotes();
         }
 
-        // Загрузка заметок из проекта в ListBox с фильтрацией по типу
+
+        /// <summary>
+        /// Загружает заметки из Project и фильтрует заметки в зависимости от выбранного типа.
+        /// Если выбрано "All", загружаются все заметки. Если выбран конкретный тип, загружаются заметки только этого типа.
+        /// После загрузки выбирает первую заметку, если список не пуст.
+        /// </summary>
         private void LoadNotes()
         {
             notesListBox.Items.Clear();
@@ -204,12 +231,20 @@ namespace NoteApp
         }
 
         // Обработка изменения выбранного типа заметки
+        /// <summary>
+        /// Обработчик события изменения выбранного типа в noteTypeComboBox.
+        /// Перезагружает список заметок при изменении фильтра.
+        /// </summary>
         private void NoteTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadNotes(); // Перезагружаем список заметок при изменении фильтра
         }
 
-        // Обработка выбора заметки
+        /// <summary>
+        /// Обработка выбора заметки в ListBox.
+        /// Загружает информацию о выбранной заметке (название, тип, текст, дата создания и изменения) и отображает её в соответствующих метках.
+        /// Если нет выбранной заметки, очищает детали заметки.
+        /// </summary>
         private void NotesListBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = notesListBox.SelectedIndex;
@@ -237,6 +272,10 @@ namespace NoteApp
             }
         }
 
+
+        /// <summary>
+        /// Очищает детали заметки при отсутствии выбранной заметки в правой панели
+        /// </summary>
         private void ClearNoteDetails()
         {
             noteTitleLabel.Text = string.Empty;
@@ -247,6 +286,11 @@ namespace NoteApp
         }
 
         // Добавление новой заметки
+        /// <summary>
+        /// Обработчик нажатия кнопки "Add Note".
+        /// Открывает форму для добавления новой заметки.
+        /// После добавления заметки перезагружает список заметок.
+        /// </summary
         private void AddNoteButton_Click(object sender, EventArgs e)
         {
             EditNoteForm editForm = new EditNoteForm();
@@ -257,7 +301,13 @@ namespace NoteApp
             }
         }
 
-        // Редактирование выбранной заметки
+
+        /// <summary>
+        /// Обработчик нажатия кнопки "Edit Note".
+        /// Редактирование выбранной заметки
+        /// Открывает форму для редактирования выбранной заметки.
+        /// После изменения заметки обновляет её в проекте и перезагружает список.
+        /// </summary
         private void EditNoteButton_Click(object sender, EventArgs e)
         {
             int index = notesListBox.SelectedIndex;  // Получаем индекс выбранной заметки в ListBox
@@ -274,7 +324,12 @@ namespace NoteApp
             }
         }
 
-        // Удаление выбранной заметки
+        /// <summary>
+        /// Обработчик нажатия кнопки "Remove Note".
+        /// Удаление выбранной заметки
+        /// Показывает подтверждающее сообщение для удаления заметки.
+        /// Удаляет заметку из проекта и перезагружает список, если удаление подтверждено.
+        /// </summary
         private void RemoveNoteButton_Click(object sender, EventArgs e)
         {
             int index = notesListBox.SelectedIndex;
@@ -290,7 +345,11 @@ namespace NoteApp
             }
         }
 
-
+        /// <summary>
+        /// Инициализирует главное меню программы.
+        /// Создает пункты меню "File", "Edit", "Help" с соответствующими пунктами: "Exit", "Add Note", "Edit Note", "Remove Note", "About".
+        /// Устанавливает горячие клавиши для некоторых пунктов меню.
+        /// </summary>
         private void InitializeMenu()
         {
             menuStrip = new MenuStrip();
@@ -319,38 +378,57 @@ namespace NoteApp
             this.Controls.Add(menuStrip);
         }
 
-        // Обработчик выхода из приложения
+
+        /// <summary>
+        /// Обработчик выхода из приложения
+        /// Обработчик выхода из приложения
+        /// </summary>
         private void ExitMenuItem_Click(object sender, EventArgs e)
         {
             this.Close(); // Закрыть приложение
         }
 
-        // Обработчик создания новой заметки
+        /// <summary>
+        /// Обработчик добавления новой заметки через меню.
+        /// Вызывает метод AddNoteButton_Click() для добавления заметки.
+        /// </summary
         private void AddNoteMenuItem_Click(object sender, EventArgs e)
         {
             AddNoteButton_Click(sender, e); // Вызов метода для создания новой заметки
         }
 
-        // Обработчик редактирования заметки
+        /// <summary>
+        /// Обработчик редактирования заметки через меню.
+        /// Вызывает метод EditNoteButton_Click() для редактирования заметки.
+        /// </summary
         private void EditNoteMenuItem_Click(object sender, EventArgs e)
         {
             EditNoteButton_Click(sender, e); // Вызов метода для редактирования заметки
         }
 
-        // Обработчик удаления заметки
+        /// <summary>
+        /// Обработчик удаления заметки через меню.
+        /// Вызывает метод RemoveNoteButton_Click() для удаления заметки.
+        /// </summary
         private void RemoveNoteMenuItem_Click(object sender, EventArgs e)
         {
             RemoveNoteButton_Click(sender, e); // Вызов метода для удаления заметки
         }
 
-        // Обработчик вызова окна "О программе"
+        /// <summary>
+        /// Обработчик вызова окна "О программе" через меню.
+        /// Открывает форму AboutForm, которая отображает информацию о приложении.
+        /// </summary
         private void AboutMenuItem_Click(object sender, EventArgs e)
         {
             AboutForm aboutForm = new AboutForm();
             aboutForm.ShowDialog(); // Открыть окно "О программе"
         }
 
-        // Обработчик закрытия формы (сохранение данных)
+        /// <summary>
+        /// Обработчик события закрытия формы.
+        /// Сохраняет данные проекта перед закрытием приложения и выводит сообщение об успешном сохранении.
+        /// </summary
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Сохранение данных проекта перед выходом
@@ -358,13 +436,19 @@ namespace NoteApp
             MessageBox.Show("Проект сохранен успешно.");
         }
 
-        // Обработчик двойного клика мышью на заметке
+        /// <summary>
+        /// Обработчик двойного клика по заметке в списке.
+        /// Вызывает метод EditSelectedNote() для открытия окна редактирования выбранной заметки.
+        /// </summary>
         private void NotesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             EditSelectedNote();
         }
 
-        // Обработчик нажатия клавиши в ListBox
+        /// <summary>
+        /// Обработчик нажатия клавиш в списке заметок
+        /// Если нажата клавиша Enter, открывает окно редактирования для выбранной заметки через метод EditSelectedNote().
+        /// </summary
         private void NotesListBox_KeyDown(object sender, KeyEventArgs e)
         {
             // Проверяем, нажата ли клавиша Enter
@@ -374,7 +458,11 @@ namespace NoteApp
             }
         }
 
-        // Метод для редактирования выбранной заметки
+        /// <summary>
+        /// Редактирует выбранную заметку.
+        /// Открывает форму EditNoteForm с данными выбранной заметки.
+        /// После редактирования обновляет заметку в проекте и перезагружает список заметок.
+        /// </summary>
         private void EditSelectedNote()
         {
             int index = notesListBox.SelectedIndex;  // Получаем индекс выбранной заметки в ListBox
@@ -391,6 +479,11 @@ namespace NoteApp
             }
         }
 
+        /// <summary>
+        /// Метод для установки Project в MainForm.
+        /// Загружает заметки установки проекта.
+        /// </summary>
+        /// <param name="project"></param>
         public void SetProject(Project project)
         {
             this.project = project;

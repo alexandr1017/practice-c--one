@@ -16,6 +16,9 @@ namespace NoteApp
         private Label noteTypeCategoryLabel;
         private FlowLayoutPanel noteTypePanel;
         private ComboBox noteTypeComboBox;
+        private Panel noteDetailsPanel;  // Панель с прокруткой
+        private Label noteUpdateDateLabel; // Добавляем две новые метки для даты создания и даты изменения
+        private Label noteCreationDateLabel;
         private Label noteDetailsLabel;
         private Button addNoteButton;
         private Button editNoteButton;
@@ -38,7 +41,7 @@ namespace NoteApp
         {
             Text = "NoteApp";
             MinimumSize = new Size(600, 400);
-            Size = new Size(800, 600);
+            Size = new Size(1280, 720);
             StartPosition = FormStartPosition.CenterScreen;
 
             // Создаем SplitContainer для разделения окна на две части (список заметок и детальная информация)
@@ -69,6 +72,8 @@ namespace NoteApp
             notesListBox = new ListBox();
             notesListBox.Dock = DockStyle.Fill;
             notesListBox.SelectedIndexChanged += NotesListBox_SelectedIndexChanged;
+            notesListBox.MouseDoubleClick += NotesListBox_MouseDoubleClick;
+            notesListBox.KeyDown += NotesListBox_KeyDown;
             splitContainer.Panel1.Controls.Add(notesListBox);
             splitContainer.Panel1.Controls.Add(noteTypeComboBox);
 
@@ -87,8 +92,7 @@ namespace NoteApp
             noteTypePanel.Padding = new Padding(10);
             noteTypePanel.AutoSize = true;
             noteTypePanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            noteTypePanel.FlowDirection = FlowDirection.LeftToRight;  // Устанавливаем горизонтальное размещение
-
+            noteTypePanel.FlowDirection = FlowDirection.LeftToRight;
 
             // Label для категории типа заметки
             noteTypeCategoryLabel = new Label();
@@ -102,21 +106,47 @@ namespace NoteApp
             noteTypeLabel.AutoSize = true;
             noteTypeLabel.Font = new Font(noteTypeLabel.Font.FontFamily, 12, FontStyle.Italic);
             noteTypeLabel.TextAlign = ContentAlignment.MiddleLeft;
-            noteTypeLabel.Margin = new Padding(5, 0, 0, 0); // Добавляем отступ слева для лучшего отображения
+            noteTypeLabel.Margin = new Padding(5, 0, 0, 0);
 
             // Добавляем подпись и тип заметки на одну панель
             noteTypePanel.Controls.Add(noteTypeCategoryLabel);
             noteTypePanel.Controls.Add(noteTypeLabel);
 
+            // Добавляем метку для даты создания
+            noteCreationDateLabel = new Label();
+            noteCreationDateLabel.AutoSize = true;
+            noteCreationDateLabel.Font = new Font(noteCreationDateLabel.Font.FontFamily, 12, FontStyle.Regular);
+            noteCreationDateLabel.TextAlign = ContentAlignment.MiddleLeft;
+            noteCreationDateLabel.Margin = new Padding(10, 0, 0, 0);  // Добавляем отступы для форматирования
+
+            // Добавляем метку для даты изменения
+            noteUpdateDateLabel = new Label();
+            noteUpdateDateLabel.AutoSize = true;
+            noteUpdateDateLabel.Font = new Font(noteUpdateDateLabel.Font.FontFamily, 12, FontStyle.Regular);
+            noteUpdateDateLabel.TextAlign = ContentAlignment.MiddleLeft;
+            noteUpdateDateLabel.Margin = new Padding(10, 0, 0, 0);  // Добавляем отступы для форматирования
+
+            // Добавляем новые метки в noteTypePanel после меток категории и типа заметки
+            noteTypePanel.Controls.Add(noteCreationDateLabel);
+            noteTypePanel.Controls.Add(noteUpdateDateLabel);
+
+            // Панель с прокруткой для отображения детальной информации
+            noteDetailsPanel = new Panel();
+            noteDetailsPanel.Dock = DockStyle.Fill;
+            noteDetailsPanel.AutoScroll = true;
+            noteDetailsPanel.BorderStyle = BorderStyle.FixedSingle;
+
             // Метка для отображения детальной информации о заметке
             noteDetailsLabel = new Label();
-            noteDetailsLabel.Dock = DockStyle.Fill;
-            noteDetailsLabel.BorderStyle = BorderStyle.FixedSingle;
+            noteDetailsLabel.AutoSize = true;
             noteDetailsLabel.Padding = new Padding(10);
 
+            // Добавляем метку с информацией в панель с прокруткой
+            noteDetailsPanel.Controls.Add(noteDetailsLabel);
+
             // Добавляем все метки и панель в правую панель SplitContainer
-            splitContainer.Panel2.Controls.Add(noteDetailsLabel);
-            splitContainer.Panel2.Controls.Add(noteTypePanel); // Добавляем панель с категорией и типом заметки
+            splitContainer.Panel2.Controls.Add(noteDetailsPanel); // Панель с прокруткой
+            splitContainer.Panel2.Controls.Add(noteTypePanel); // Панель с категорией и типом заметки
             splitContainer.Panel2.Controls.Add(noteTitleLabel);
 
             // Кнопка "Добавить заметку"
@@ -194,10 +224,12 @@ namespace NoteApp
                 // Устанавливаем тип заметки
                 noteTypeLabel.Text = Enum.GetName(typeof(TypeNoteEnum), selectedNote.getTypeOfNote());
 
+                // Устанавливаем даты создания и изменения
+                noteCreationDateLabel.Text = $"Дата создания: {selectedNote.getDateTimeCreate()}";
+                noteUpdateDateLabel.Text = $"Дата изменения: {selectedNote.getDateTimeUpdate()}";
+
                 // Устанавливаем детальную информацию о заметке
-                noteDetailsLabel.Text = $"Текст: {selectedNote.getTextOfNote()}\n" +
-                                        $"Дата создания: {selectedNote.getDateTimeCreate()}\n" +
-                                        $"Дата изменения: {selectedNote.getDateTimeUpdate()}";
+                noteDetailsLabel.Text = $"Текст: {selectedNote.getTextOfNote()}";
             }
             else
             {
@@ -209,6 +241,8 @@ namespace NoteApp
         {
             noteTitleLabel.Text = string.Empty;
             noteTypeLabel.Text = string.Empty;
+            noteCreationDateLabel.Text = string.Empty;
+            noteUpdateDateLabel.Text = string.Empty;
             noteDetailsLabel.Text = string.Empty;
         }
 
@@ -322,6 +356,39 @@ namespace NoteApp
             // Сохранение данных проекта перед выходом
             ManagerProject.saveProjectToJsonFile(project);
             MessageBox.Show("Проект сохранен успешно.");
+        }
+
+        // Обработчик двойного клика мышью на заметке
+        private void NotesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            EditSelectedNote();
+        }
+
+        // Обработчик нажатия клавиши в ListBox
+        private void NotesListBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Проверяем, нажата ли клавиша Enter
+            if (e.KeyCode == Keys.Enter)
+            {
+                EditSelectedNote();
+            }
+        }
+
+        // Метод для редактирования выбранной заметки
+        private void EditSelectedNote()
+        {
+            int index = notesListBox.SelectedIndex;  // Получаем индекс выбранной заметки в ListBox
+            if (index >= 0 && filteredNotes != null && index < filteredNotes.Count)
+            {
+                Note selectedNote = filteredNotes[index];  // Берем заметку из фильтрованного списка
+                EditNoteForm editForm = new EditNoteForm(selectedNote);
+                if (editForm.ShowDialog() == DialogResult.OK)
+                {
+                    // Обновляем заметку в оригинальном списке проекта
+                    project.updateNote(editForm.Note);
+                    LoadNotes();  // Перезагружаем список заметок
+                }
+            }
         }
 
         public void SetProject(Project project)

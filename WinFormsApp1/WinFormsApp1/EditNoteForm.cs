@@ -9,17 +9,58 @@ namespace NoteAppUI
 {
     public partial class EditNoteForm : Form
     {
+        /// <summary>
+        /// Заметка, которая редактируется в форме. 
+        /// Свойство является публичным для получения значения, но изменяется только внутри класса.
+        /// </summary>
         public Note Note { get; private set; }
 
+        /// <summary>
+        /// Поле для ввода названия заметки.
+        /// </summary>
         private TextBox nameTextBox;
+
+        /// <summary>
+        /// Выпадающий список для выбора типа заметки (например, личная, рабочая и т.д.).
+        /// </summary>
         private ComboBox typeComboBox;
+
+        /// <summary>
+        /// Поле для ввода текста заметки.
+        /// </summary>
         private TextBox textTextBox;
+
+        /// <summary>
+        /// Метка, отображающая дату создания заметки.
+        /// </summary>
         private Label creationDateLabel;
+
+        /// <summary>
+        /// Метка, отображающая дату последнего изменения заметки.
+        /// </summary>
         private Label updateDateLabel;
+
+        /// <summary>
+        /// Кнопка для сохранения изменений в заметке и закрытия формы.
+        /// </summary>
         private Button okButton;
+
+        /// <summary>
+        /// Кнопка для отмены изменений и закрытия формы без сохранения.
+        /// </summary>
         private Button cancelButton;
+
+        /// <summary>
+        /// Главная таблица компоновки, которая используется для организации элементов управления в форме.
+        /// </summary>
         private TableLayoutPanel mainTableLayout;
 
+
+
+        /// <summary>
+        /// Конструктор формы для создания или редактирования заметки.
+        /// </summary>
+        /// <param name="note">Существующая заметка для редактирования или null для создания новой.</param>
         public EditNoteForm(Note note = null)
         {
             InitializeComponent();
@@ -41,6 +82,9 @@ namespace NoteAppUI
             }
         }
 
+        /// <summary>
+        /// Инициализация компонентов формы и настройка элементов управления.
+        /// </summary>
         private void InitializeComponent()
         {
             this.Text = "Edit Note";
@@ -129,6 +173,10 @@ namespace NoteAppUI
             this.Controls.Add(mainTableLayout);
         }
 
+        /// <summary>
+        /// Обработка нажатия кнопки OK. 
+        /// Проверка корректности данных и сохранение изменений в заметке.
+        /// </summary>
         private void OkButton_Click(object sender, EventArgs e)
         {
             // Проверка на корректность данных

@@ -16,25 +16,95 @@ namespace NoteApp
     /// </summary>
     public partial class MainForm : Form
     {
-        private Project project; // Экземпляр класса Project, который хранит список заметок.
-        private ListBox notesListBox; // Элемент интерфейса ListBox, отображающий список заметок.
-        private Label noteTitleLabel; // Метка, отображающая название выбранной заметки.
-        private Label noteTypeLabel; // Метка, отображающая тип выбранной заметки.
-        private Label noteTypeCategoryLabel; // Метка, указывающая категорию типа заметки.
-        private FlowLayoutPanel noteTypePanel; // Панель, которая содержит метки типа заметки и категорию.
-        private ComboBox noteTypeComboBox; // Выпадающий список для фильтрации заметок по типу.
-        private Panel noteDetailsPanel;  // Панель с прокруткой, отображающая текст выбранной заметки.
-        private Label noteUpdateDateLabel; // Метка, отображающая дату последнего изменения заметки.
-        private Label noteCreationDateLabel; // Метка, отображающая дату создания заметки.
-        private Label noteDetailsLabel; // Метка, отображающая текст заметки.
-        private Button addNoteButton; // Кнопка для добавления новой заметки.
-        private Button editNoteButton; // Кнопка для редактирования выбранной заметки.
-        private Button removeNoteButton; // Кнопка для удаления выбранной заметки.
-        private MenuStrip menuStrip; // Главное меню приложения.
-        private SplitContainer splitContainer; // Контейнер для разделения окна на две части: список заметок и детальную информацию о заметке.
-        private TableLayoutPanel tableLayoutPanel; // Панель для размещения кнопок в нижней части окна.
+        /// <summary>
+        /// Экземпляр класса Project, который хранит список заметок.
+        /// </summary>
+        private Project project;
 
-        private List<Note> filteredNotes; // Список заметок, отфильтрованных по выбранному типу
+        /// <summary>
+        /// Элемент интерфейса ListBox, отображающий список заметок.
+        /// </summary>
+        private ListBox notesListBox;
+
+        /// <summary>
+        /// Метка, отображающая название выбранной заметки.
+        /// </summary>
+        private Label noteTitleLabel;
+
+        /// <summary>
+        /// Метка, отображающая тип выбранной заметки.
+        /// </summary>
+        private Label noteTypeLabel;
+
+        /// <summary>
+        /// Метка, указывающая категорию типа заметки (например, личная, рабочая).
+        /// </summary>
+        private Label noteTypeCategoryLabel;
+
+        /// <summary>
+        /// Панель, которая содержит метки типа заметки и категории.
+        /// </summary>
+        private FlowLayoutPanel noteTypePanel;
+
+        /// <summary>
+        /// Выпадающий список для фильтрации заметок по типу.
+        /// </summary>
+        private ComboBox noteTypeComboBox;
+
+        /// <summary>
+        /// Панель с прокруткой, отображающая текст выбранной заметки.
+        /// </summary>
+        private Panel noteDetailsPanel;
+
+        /// <summary>
+        /// Метка, отображающая дату последнего изменения заметки.
+        /// </summary>
+        private Label noteUpdateDateLabel;
+
+        /// <summary>
+        /// Метка, отображающая дату создания заметки.
+        /// </summary>
+        private Label noteCreationDateLabel;
+
+        /// <summary>
+        /// Метка, отображающая текст заметки.
+        /// </summary>
+        private Label noteDetailsLabel;
+
+        /// <summary>
+        /// Кнопка для добавления новой заметки.
+        /// </summary>
+        private Button addNoteButton;
+
+        /// <summary>
+        /// Кнопка для редактирования выбранной заметки.
+        /// </summary>
+        private Button editNoteButton;
+
+        /// <summary>
+        /// Кнопка для удаления выбранной заметки.
+        /// </summary>
+        private Button removeNoteButton;
+
+        /// <summary>
+        /// Главное меню приложения.
+        /// </summary>
+        private MenuStrip menuStrip;
+
+        /// <summary>
+        /// Контейнер для разделения окна на две части: список заметок и детальную информацию о заметке.
+        /// </summary>
+        private SplitContainer splitContainer;
+
+        /// <summary>
+        /// Панель для размещения кнопок в нижней части окна.
+        /// </summary>
+        private TableLayoutPanel tableLayoutPanel;
+
+        /// <summary>
+        /// Список заметок, отфильтрованных по выбранному типу.
+        /// </summary>
+        private List<Note> filteredNotes;
 
         /// <summary>
         /// инициализирует форму с проектом, переданным в качестве аргумента.

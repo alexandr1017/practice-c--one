@@ -230,8 +230,31 @@ namespace NoteApp
 
             // Метка для отображения детальной информации о заметке
             noteDetailsLabel = new Label();
-            noteDetailsLabel.AutoSize = true;
+            noteDetailsLabel.AutoSize = true; // Отключаем автоматическую установку размера
             noteDetailsLabel.Padding = new Padding(10);
+            noteDetailsLabel.TextAlign = ContentAlignment.TopLeft; // Выравнивание текста
+
+            // Устанавливаем максимальную ширину метки
+            noteDetailsLabel.MaximumSize = new Size(noteDetailsPanel.ClientSize.Width - 20, 0); // Учитываем отступы
+
+            // Обработчик события Resize
+            /*
+             Событие Resize:
+                noteDetailsPanel.Resize += (s, e) => {...}; — это подписка на событие изменения размера панели noteDetailsPanel. Каждый раз, когда пользователь меняет размер этой панели (например, растягивая окно), вызывается этот обработчик.
+                noteDetailsLabel.MaximumSize:
+                noteDetailsLabel.MaximumSize = new Size(noteDetailsPanel.ClientSize.Width - 20, 0); — устанавливает максимальный размер для метки noteDetailsLabel.
+                Свойство MaximumSize контролирует, как метка может расширяться, но не за её пределы. В данном случае:
+                Width: максимальная ширина метки устанавливается как ширина панели (noteDetailsPanel.ClientSize.Width) минус 20 пикселей. Это даёт небольшой отступ.
+                Height: значение ноль означает, что высота метки не ограничена, и она может автоматически изменяться в зависимости от содержимого (например, текст может переноситься на несколько строк).
+                
+                Результат:
+                Когда изменяется размер панели, метка будет автоматически подстраиваться по ширине, но оставаться не больше, чем заданная максимальная ширина, с учётом 20 пикселей отступа.
+                Если текст в метке длинный, он будет переноситься на новую строку, чтобы вписаться в обновленную ширину панели.
+            */
+            
+            noteDetailsPanel.Resize += (s, e) => {
+                noteDetailsLabel.MaximumSize = new Size(noteDetailsPanel.ClientSize.Width - 20, 0);
+            };
 
             // Добавляем метку с информацией в панель с прокруткой
             noteDetailsPanel.Controls.Add(noteDetailsLabel);

@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace NoteApp
 {
+    /// <summary>
+    /// Перечисление Enum, представляющее различные типы заметок.
+    /// Позволяет классифицировать заметки по категориям для удобства.
+    /// </summary>
     public enum TypeNoteEnum
     {
         Work,

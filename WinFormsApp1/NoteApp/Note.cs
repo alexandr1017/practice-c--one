@@ -188,5 +188,25 @@ namespace NoteApp
                 this.dateTimeUpdate
             );
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+
+            Note other = (Note)obj;
+            return this.name == other.name &&
+                   this.noteType == other.noteType &&
+                   this.textOfNote == other.textOfNote &&
+                   this.dateTimeCreate == other.dateTimeCreate &&
+                   this.dateTimeUpdate == other.dateTimeUpdate;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(name, noteType, textOfNote, dateTimeCreate, dateTimeUpdate);
+        }
     }
 }

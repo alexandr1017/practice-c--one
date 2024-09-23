@@ -58,27 +58,41 @@
         /// <summary>
         /// Обновляет заметку в списке проекта, если она существует.
         /// </summary>
-        /// <param name="note">Заметка для обновления.</param>
+        /// <param name="updatedNote">Заметка для обновления.</param>
         /// <returns>
         /// Возвращает true, если заметка успешно обновлена. 
         /// Возвращает false, если заметка не найдена в списке или является null.
         /// </returns>
-        public bool updateNote(Note note)
+        public bool updateNote(Note updatedNote)
         {
-            if (note != null && !notesList.Contains(note))
+            if (updatedNote == null)
             {
                 return false;
             }
-            else
+
+        // Найти заметку по имени
+        /*FirstOrDefault:
+        Это метод расширения, доступный для коллекций, поддерживающих интерфейс IEnumerable<T>, таких как List<T>.
+        Он выполняет поиск первого элемента в коллекции, который удовлетворяет заданному условию, или возвращает значение по умолчанию,
+        если такой элемент не найден.
+        Если элемент не найден, метод возвращает null для ссылочных типов, таких как объекты классов (в данном случае Note).
+        note => note.getName() == updatedNote.getName():
+        Это лямбда-выражение, которое представляет собой условие, по которому осуществляется поиск.
+        Лямбда-выражение означает: "для каждого объекта note в notesList, верни первую заметку, у которой
+        название (note.getName()) совпадает с названием заметки, которую мы пытаемся обновить (updatedNote.getName())".*/
+            var existingNote = notesList.FirstOrDefault(note => note.getName() == updatedNote.getName());
+
+            if (existingNote != null)
             {
-                int findIndex = notesList.IndexOf(note);
-                if (findIndex != -1)
-                {
-                    notesList[findIndex] = note;
-                    return true;
-                }
-                return false;
+                // Обновляем только необходимые поля
+                existingNote.setTypeOfNote(updatedNote.getTypeOfNote());
+                existingNote.setTextOfNote(updatedNote.getTextOfNote());
+                existingNote.setDateTimeUpdate(updatedNote.getDateTimeUpdate()); // Обновляем дату
+
+                return true;
             }
+
+            return false; // Если заметка не найдена
         }
 
         /// <summary>

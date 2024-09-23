@@ -426,15 +426,15 @@ namespace NoteApp
         private void RemoveNoteButton_Click(object sender, EventArgs e)
         {
             int index = notesListBox.SelectedIndex;
-            if (index >= 0)
+            if (index >= 0 && filteredNotes != null && index < filteredNotes.Count)
             {
-                var result = MessageBox.Show($"Do you really want to remove this note: {project.getNotesList()[index].getName()}?",
-                                             "Confirmation", MessageBoxButtons.OKCancel);
-                if (result == DialogResult.OK)
-                {
-                    project.removeNoteOfNotesList(project.getNotesList()[index]);
-                    LoadNotes();
-                }
+               var result = MessageBox.Show($"Do you really want to remove this note: {project.getNotesList()[index].getName()}?",
+                                                 "Confirmation", MessageBoxButtons.OKCancel);
+             if (result == DialogResult.OK)
+              {
+               project.removeNoteOfNotesList(project.getNotesList()[index]);
+               LoadNotes();
+               }
             }
         }
 
@@ -525,7 +525,7 @@ namespace NoteApp
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             // Сохранение данных проекта перед выходом
-            ManagerProject.saveProjectToJsonFile(project);
+            ManagerProject.saveProjectToJsonFile(project, ManagerProject.getFilePath());
             MessageBox.Show("Проект сохранен успешно.");
         }
 

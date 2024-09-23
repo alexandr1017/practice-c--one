@@ -17,13 +17,14 @@ namespace NoteApp
         /// Путь к файлу, в который будут сохраняться и загружаться данные заметок.
         /// По умолчанию файл сохраняется в папке "Мои документы" с именем "json.txt".
         /// </summary>
-        static string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "json.txt");
+        private static string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "json.txt");
 
         /// <summary>
         /// Загружает проект из JSON-файла. Если файл не найден, возвращает новый проект с пустым списком заметок.
         /// </summary>
+        /// <param name="filePath">Путь к JSON-файлу, из которого будет загружен проект.</param>
         /// <returns>Проект, содержащий список заметок <see cref="Project"/>.</returns>
-        public static Project loadProjectFromJsonFile()
+        public static Project loadProjectFromJsonFile(string filePath)
         {
             try
             {
@@ -46,11 +47,12 @@ namespace NoteApp
         }
 
         /// <summary>
-        /// Сохраняет текущий проект в JSON-файл.
+        /// Сохраняет текущий проект в указанный JSON-файл.
         /// Если файл существует, он будет перезаписан.
         /// </summary>
         /// <param name="project">Проект, который нужно сохранить <see cref="Project"/>.</param>
-        public static void saveProjectToJsonFile(Project project)
+        /// <param name="filePath">Путь к JSON-файлу, в который будет сохранён проект.</param>
+        public static void saveProjectToJsonFile(Project project, String filePath)
         {
             // Если файл существует, он удаляется перед записью нового содержимого
             if (File.Exists(filePath))
@@ -74,6 +76,13 @@ namespace NoteApp
             {
                 sw.Write(json);
             }
+        }
+        /// <summary>
+        /// Возвращает путь к файлу filePath строкой
+        /// </summary>
+        /// <returns></returns>
+        public static string getFilePath() {
+            return filePath;
         }
     }
 }

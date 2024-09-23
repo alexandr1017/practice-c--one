@@ -16,6 +16,7 @@ namespace NoteApp
         [STAThread]
         static void Main()
         {
+            
             // Включение визуальных стилей для приложения (соответствие современным темам Windows).
             Application.EnableVisualStyles();
 
@@ -23,7 +24,7 @@ namespace NoteApp
             Application.SetCompatibleTextRenderingDefault(false);
 
             // Загрузка проекта из файла JSON с помощью ManagerProject и статаического метода класса loadProjectFromJsonFile().
-            Project project = ManagerProject.loadProjectFromJsonFile();
+            Project project = ManagerProject.loadProjectFromJsonFile(ManagerProject.getFilePath());
 
             // Создание главной формы приложения и передача в нее загруженного Project.
             MainForm mainForm = new MainForm(project);
